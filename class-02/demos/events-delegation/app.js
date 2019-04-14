@@ -2,24 +2,31 @@
 
 // nav handler
 $('nav a').on('click', function () {
+  debugger;
   let $whereToGo = $(this).data('tab');
   // what is $whereToGo
   // gives us 'delegation' or 'attributes'
+  debugger;
   console.log('$where to go', $whereToGo);
+  debugger;
   $('.tab-content').hide();
   // we want $('#delegation')
+  debugger;
   $('#' + $whereToGo).fadeIn(750)
 })
 
 // event logger
 function logTarget() {
+  debugger;
   console.log('this', this);
   console.log('$(this)', $(this));
-
+  debugger;
   let $target = $(this).text();
+  debugger;
   let $newFeedback = $('#feedback p:first-child').clone();
-
+  debugger;
   $newFeedback.text(`You clicked on ${$target}`);
+  debugger;
   $('#feedback').append($newFeedback);
 }
 

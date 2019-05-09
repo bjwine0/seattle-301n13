@@ -175,7 +175,7 @@ function getWeather(request, response) {
       else {
         const url = `https://api.darksky.net/forecast/${process.env.WEATHER_API_KEY}/${request.query.data.latitude},${request.query.data.longitude}`;
 
-        return superagent.get(url)
+        superagent.get(url)
           .then(weatherResults => {
             console.log('Weather from API');
             if (!weatherResults.body.daily.data.length) { throw 'NO DATA'; }

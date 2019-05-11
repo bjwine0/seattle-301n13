@@ -1,0 +1,97 @@
+'use strict'
+
+// Environment variables
+require('dotenv').config();
+
+// Application Dependencies
+const express = require('express');
+const pg = require('pg');
+
+// Application Setup
+const app = express();
+const PORT = process.env.PORT;
+
+// Database Setup
+const client = new pg.Client(process.env.DATABASE_URL);
+client.connect();
+client.on('error', err => console.error(err));
+
+// Express middleware
+// Utilize ExpressJS functionality to parse the body of the request
+app.use(express.urlencoded({ extended: true }));
+
+// Set the view engine for server-side templating
+app.set('view engine', 'ejs');
+
+// Specify a directory for static resources
+app.use(express.static('./public'));
+
+// API Routes
+app.get('/', getTasks);
+
+// locahost:3000/tasks/1
+app.get('/tasks/:task_id', getOneTask);
+
+app.get('/add', showForm);
+
+app.post('/add', addTask);
+
+app.get('*', (req, res) => res.status(404).send('This route does not exist'));
+
+app.listen(PORT, () => console.log(`Listening on port: ${PORT}`));
+
+
+// HELPER FUNCTIONS
+
+function getTasks(request, response) {
+  let SQL = 'SELECT * FROM tasks;';
+
+  return client.query(SQL)
+    .then(results => {
+      console.log(results.rows);
+      response.render('index', { results: results.rows })
+    })
+    .catch(handleError);
+}
+
+function getOneTask(request, response) {
+
+  console.log('TASK ID = ', request.params.task_id);
+
+  let SQL = 'SELECT * FROM tasks WHERE id=$1;';
+  let values = [request.params.task_id];
+
+  return client.query(SQL, values)
+    .then(result => {
+      // console.log('single', result.rows[0]);
+      return response.render('pages/detail-view', { task: result.rows[0] });
+    })
+    .catch(err => handleError(err, response));
+}
+
+function showForm(request, response) {
+  response.render('pages/add-view');
+}
+
+function addTask(request, response) {
+  console.log(request.body);
+  let { title, description, category, contact, status } = request.body;
+
+  // let title = request.body.title;
+  // let description = request.body.description;
+  // let category = request.body.category;
+
+  let SQL = 'INSERT INTO tasks(title, description, category, contact, status) VALUES ($1, $2, $3, $4, $5);';
+  let values = [title, description, category, contact, status];
+
+  return client.query(SQL, values)
+    .then(result => {
+      console.log(result);
+      response.redirect('/')
+    })
+    .catch(err => handleError(err, response));
+}
+
+function handleError(error, response) {
+  response.render('pages/error-view', { error: 'Uh Oh - Something when wrong...' });
+}

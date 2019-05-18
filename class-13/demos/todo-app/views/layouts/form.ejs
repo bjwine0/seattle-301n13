@@ -1,4 +1,4 @@
-<h2 class="view-title"><%- 'update' === formAction ? "Update Task" : "Add A Task" %></h2>
+<h2 class="view-title"><% 'update' === formAction ? "Update Task" : "Add A Task" %></h2>
 <form action="<%= 'update' === formAction ? `/update/${task.id}` : '/add' %>" method="post">
   <input type="hidden" name="_method" value="<%- 'update' === formAction ? 'put' : 'post' %>">
   <input type="text" name="title" value="<%- task.title %>" placeholder="Task Name">
